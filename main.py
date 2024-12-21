@@ -68,18 +68,27 @@ class Game:
         self.checkAllPlayerHand()
         print("---------------Testing Purposes---------------")
 
+
+        print("")
+
+        print("You're cards 1 and 2 are: ")
+        print(self.players[0].hand[0])
+        print(self.players[0].hand[1])
+
         inc = 0
         while self.cabo == -1 or (self.cabo != -1 and inc % len(self.players) != self.cabo) :
             # loop while cabo == -1 or (cabo != -1 and cabo != the current player)
             turn = inc % len(self.players)
             currentPlayer = self.players[turn]
+            print("------------------------------------------")
+            print(currentPlayer)
 
             if(not currentPlayer.brain):
+                self.showPlayerCard(currentPlayer)
+                print("Active card is " + str(self.active[-1]))
                 self.cpu(currentPlayer)
             else:
-                print("------------------------------------------")
-                self.checkPlayerHand(currentPlayer)
-
+                self.showPlayerCard(currentPlayer)
                 # Check if player wants to use face up card
                 if (len(self.active) > 0):
                     print("Active card is " + str(self.active[-1]))
@@ -100,7 +109,6 @@ class Game:
                 # Add logic for 7,8,9 abilities. Keep in mind that the abilities don't trigger if taken from face up pile.
                 #   if (use active card)
                 #   else (not use active card)
-
 
                 # First condition -> Will you use the active card?
                     # If yes then which card will you replace
@@ -126,7 +134,6 @@ class Game:
                     ans = input("Will you call cabo y/n ")
                     if ans == "y":
                         self.cabo = turn
-
             inc += 1
         self.win()
     
@@ -162,8 +169,6 @@ class Game:
             if(random.random() < 0.5):
                 card = self.active[-1]
                 cardNumber = random.randint(0, len(player.hand)-1)
-                print(player)
-                print(cardNumber)
                 self.replaceCard(player, card, cardNumber)
             else:
                 card = self.deck.pop(0)
@@ -197,7 +202,6 @@ class Game:
             if acc < min:
                 min = acc
                 winner = x
-        
         print("Winner! " + str(winner))
     
     def checkCards(self, lst):
@@ -225,12 +229,12 @@ class Game:
     
     # Replace the card of the player's hand with the passed in card
     def replaceCard(self, player, card, index):
-        print(len(player.hand))
+        # print(len(player.hand))
         self.active.append(player.hand[index])
         player.hand[index] = card
 
     def replace(self, player, card):
-        action = int(input("Which card will " + str(player) + " replace?"))
+        action = int(input("Which card will " + str(player) + " replace? ")) - 1
         self.replaceCard(player, card, action)
 
     # Show the card of the input player at input index, for 7 and 8
@@ -244,5 +248,17 @@ class Game:
         hold = receiverhand[receiverindex]
         receiverhand[receiverindex] = swapperhand[swapperindex]
         swapperhand[swapperindex] = hold
+
+    def showHiddenCard(self, number):
+        res = "\n" + " -----" + "\n" + \
+                    "|?    |" + "\n" + \
+                    "|  " + str(number) + "  |" + "\n" + \
+                    "|    ?|" + \
+                "\n" + " -----"
+        return res
+    
+    def showPlayerCard(self, player):
+        for i, _ in enumerate(player.hand):
+            print(self.showHiddenCard(i+1))
     
 round = Game(2)
