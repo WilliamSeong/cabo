@@ -5,14 +5,20 @@ class Card:
         self.suit = suit
         self.value = value
 
-    # A bit buggy with 2 digit numbers, fix later
     def __str__(self):
         s = self.suit
-        res = "\n" + " -----" + "\n" + \
-                    "|" + s + "    |" + "\n" + \
-                    "|  " + str(self.value) + "  |" + "\n" + \
-                    "|    " + s + "|" + \
-                "\n" + " -----"
+        if (self.value < 10):
+            res = "\n" + " -----" + "\n" + \
+                        "|" + str(self.value) + "    |" + "\n" + \
+                        "|  " + s + "  |" + "\n" + \
+                        "|    " + str(self.value) + "|" + \
+                    "\n" + " -----"
+        else:
+            res = "\n" + " -----" + "\n" + \
+                        "|" + str(self.value) + "   |" + "\n" + \
+                        "|  " + s + "  |" + "\n" + \
+                        "|   " + str(self.value) + "|" + \
+                    "\n" + " -----"
         return res
 
 
