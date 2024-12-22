@@ -1,5 +1,6 @@
 import random
 
+
 class Card:
     def __init__(self, suit, value):
         self.suit = suit
@@ -30,6 +31,7 @@ class Player:
 
     def __str__(self):
         return "Player " + str(self.id)
+
 
 class Game:
     def __init__(self, playercount):
@@ -90,11 +92,11 @@ class Game:
             print(currentPlayer)
 
             if(not currentPlayer.brain):
-                self.showPlayerCard(currentPlayer)
+                self.showHiddenPlayerCard(currentPlayer)
                 print("Active card is " + str(self.active[-1]))
                 self.cpu(currentPlayer)
             else:
-                self.showPlayerCard(currentPlayer)
+                self.showHiddenPlayerCard(currentPlayer)
                 # Check if player wants to use face up card
                 if (len(self.active) > 0):
                     print("Active card is " + str(self.active[-1]))
@@ -152,12 +154,14 @@ class Game:
                     userinput = int(input("Which card would you like to see? ")) - 1
                     self.showCard(player, userinput)
                     self.active.append(card)
+                    self.stacking()
                 elif (num == 8):
                     inputPlayer = int(input("Who's card would you like to see? ")) - 1
                     inputCard = int(input("Which card would you like to see? ")) - 1
                     chosenPlayer = self.players[inputPlayer]
                     self.showCard(chosenPlayer, inputCard)
                     self.active.append(card)
+                    self.stacking()
                 elif (num == 9):
                     playerCard = int(input("Which card do you want to swap out? ")) - 1
                     inputPlayer = int(input("Who would you like to swap with? ")) - 1
@@ -165,10 +169,39 @@ class Game:
                     inputCard = int(input("Which of their card would you like to swap? ")) - 1
                     self.swapCard(player, chosenPlayer, playerCard, inputCard)
                     self.active.append(card)
+                    self.stacking()
             else:
                 self.discard(player, card)
         else:
             self.discard(player, card)
+
+    def stacking(self):
+        print("New Active Card!")
+        print(self.active[-1])
+        userinput = input("Would you like to stack")
+
+        if userinput == "y":
+            print("Which card would you like to stack?")
+            # this is only being offered to player 1
+
+            self.showHiddenPlayerCard(self.players[0])
+            userstack = int(input("Stack? ")) - 1
+
+            self.showCard(self.players[0], userstack)
+
+            playerval = self.players[0].hand[userstack].value
+            activeval = self.active[-1].value
+            if playerval == activeval:
+                card = self.players[0].hand.pop(userstack)
+                self.active.append(card)
+                print("Nice! New hand:")
+                self.showHiddenPlayerCard(self.players[0])
+                self.stacking()
+            else:
+                print("you fucked up")
+                card = self.deck.pop(0)
+                self.players[0].hand.append(card)
+
 
     def cpu(self, player):
         if(len(self.active) > 0):
@@ -182,7 +215,6 @@ class Game:
         else:
             card = self.deck.pop(0)
             self.cpuAbility(player, card)
-        return 0
     
     def cpuAbility(self, player, card):
         if (card.value == 9):
@@ -232,12 +264,14 @@ class Game:
             self.replace(player, card)
         else:
             self.active.append(card)
+            self.stacking()
     
     # Replace the card of the player's hand with the passed in card
     def replaceCard(self, player, card, index):
         # print(len(player.hand))
         self.active.append(player.hand[index])
         player.hand[index] = card
+        self.stacking()
 
     def replace(self, player, card):
         action = int(input("Which card will " + str(player) + " replace? ")) - 1
@@ -263,8 +297,9 @@ class Game:
                 "\n" + " -----"
         return res
     
-    def showPlayerCard(self, player):
+    def showHiddenPlayerCard(self, player):
         for i, _ in enumerate(player.hand):
             print(self.showHiddenCard(i+1))
-    
+
+
 round = Game(2)
