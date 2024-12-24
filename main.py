@@ -2,9 +2,10 @@ import random
 
 
 class Card:
-    def __init__(self, suit, value):
+    def __init__(self, suit, value, ghost):
         self.suit = suit
         self.value = value
+        self.ghost = ghost
 
     def __str__(self):
         s = self.suit
@@ -40,7 +41,7 @@ class Game:
         suits = ["d", "h", "c", "s"]
         for x in suits:
             for y in range(13):
-                deck.append(Card(x, y))
+                deck.append(Card(x, y, False))
         random.shuffle(deck)
         self.deck = deck
 
@@ -71,13 +72,13 @@ class Game:
                 x.hand.append(self.deck.pop(randint))
 
     def start(self):
-        print("Let's Play!")
-        print("---------------Testing Purposes---------------")
-        self.checkAllPlayerHand()
-        print("---------------Testing Purposes---------------")
+        # print("Let's Play!")
+        # print("---------------Testing Purposes---------------")
+        # self.checkAllPlayerHand()
+        # print("---------------Testing Purposes---------------")
 
 
-        print("")
+        # print("")
 
         print("You're cards 1 and 2 are: ")
         print(self.players[0].hand[0])
@@ -92,18 +93,21 @@ class Game:
             print(currentPlayer)
 
             if(not currentPlayer.brain):
-                self.showHiddenPlayerCard(currentPlayer)
-                print("Active card is " + str(self.active[-1]))
+                # self.showHiddenPlayerCard(currentPlayer)
+                # print("Active card is " + str(self.active[-1]))
                 self.cpu(currentPlayer)
             else:
                 self.showHiddenPlayerCard(currentPlayer)
+                print("------------------------------------------")
                 # Check if player wants to use face up card
                 if (len(self.active) > 0):
                     print("Active card is " + str(self.active[-1]))
                     active = input("Would you like to use active card? y/n ")
                     if (active == "y"):
                         card = self.active[-1]
+                        print("------------------------------------------")
                         print("Your drawn card is " + str(card))
+                        print("------------------------------------------")
                         self.replace(currentPlayer, card)
                     else:
                         card = self.deck.pop(0)
@@ -139,7 +143,7 @@ class Game:
                 #     self.replaceCard(currentPlayer, card, action)
 
                 if (self.cabo == -1):
-                    ans = input("Will you call cabo y/n ")
+                    ans = input("Will you call cabo? y/n ")
                     if ans == "y":
                         self.cabo = turn
             inc += 1
@@ -178,10 +182,10 @@ class Game:
     def stacking(self):
         print("New Active Card!")
         print(self.active[-1])
-        userinput = input("Would you like to stack")
+        userinput = input("Would you like to stack? y/n ")
 
         if userinput == "y":
-            print("Which card would you like to stack?")
+            print("Which card would you like to stack? ")
             # this is only being offered to player 1
 
             self.showHiddenPlayerCard(self.players[0])
@@ -192,8 +196,9 @@ class Game:
             playerval = self.players[0].hand[userstack].value
             activeval = self.active[-1].value
             if playerval == activeval:
-                card = self.players[0].hand.pop(userstack)
+                card = self.players[0].hand[userstack]
                 self.active.append(card)
+                self.players[0].hand[userstack] = Card("?", -1, True)
                 print("Nice! New hand:")
                 self.showHiddenPlayerCard(self.players[0])
                 self.stacking()
@@ -244,7 +249,8 @@ class Game:
     
     def checkCards(self, lst):
         for x in lst:
-            print(x)
+            if not x.ghost:
+                print(x)
         print("")
 
     # Check hand of player inputed
@@ -298,8 +304,9 @@ class Game:
         return res
     
     def showHiddenPlayerCard(self, player):
-        for i, _ in enumerate(player.hand):
-            print(self.showHiddenCard(i+1))
+        for i, x in enumerate(player.hand):
+            if not x.ghost:
+                print(self.showHiddenCard(i+1))
 
 
 round = Game(2)
