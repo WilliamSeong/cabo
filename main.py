@@ -185,27 +185,44 @@ class Game:
         userinput = input("Would you like to stack? y/n ")
 
         if userinput == "y":
+            
+            print("Who's card would you like to stack? ")
+            stackplayer = int(input("Player? ")) - 1
+
             print("Which card would you like to stack? ")
             # this is only being offered to player 1
+            self.showHiddenPlayerCard(self.players[stackplayer])
+            cardstack = int(input("Stack? ")) - 1
 
-            self.showHiddenPlayerCard(self.players[0])
-            userstack = int(input("Stack? ")) - 1
+            self.showCard(self.players[0], cardstack)
 
-            self.showCard(self.players[0], userstack)
+            # First check if the value of the stackplayer's cardstack is the same as the active card's value
+                # then if stackplayer = 0, then remove the card from the hand
+                # else, remove the card from the hand and ask player to pick a card from their hand, and add it to the stackplayer hand
+            # else, add the card to the player's hand
 
-            playerval = self.players[0].hand[userstack].value
+            card = self.players[stackplayer].hand[cardstack]
+
+            playerval = card.value
             activeval = self.active[-1].value
-            if playerval == activeval:
-                card = self.players[0].hand[userstack]
-                self.active.append(card)
-                self.players[0].hand[userstack] = Card("?", -1, True)
-                print("Nice! New hand:")
-                self.showHiddenPlayerCard(self.players[0])
-                self.stacking()
-            else:
+            if playerval != activeval:
                 print("you fucked up")
                 card = self.deck.pop(0)
                 self.players[0].hand.append(card)
+            else:
+                if stackplayer == 0:
+                    self.active.append(card)
+                    self.players[0].hand[cardstack] = Card("?", -1, True)
+                    print("Nice! New hand:")
+                    self.showHiddenPlayerCard(self.players[stackplayer])
+                    self.stacking()
+                else:
+                    self.active.append(card)
+                    self.players[stackplayer].hand[cardstack] = Card("?", -1, True)
+                    userchoice = int(input("Which card would you like to add to their hand? ")) - 1
+                    self.players[stackplayer].hand.append(self.players[0].hand[userchoice])
+                    self.players[0].hand[userchoice] = Card("?", -1, True)
+                    self.stacking()
 
 
     def cpu(self, player):
