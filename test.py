@@ -1,11 +1,12 @@
 import random
+import main
 
-x = random.randint(0, 5);
+class TestGame(Game):
+    def test_game(self, player1, player2, deck):
+        self.players = [player1, player2]
+        self.deck = deck
+        self.active = []
+        self.cabo = -1
 
-print(x)
+    
 
-lst = [2,2,2,2]
-
-for i, x in enumerate(lst):
-    print(i)
-    print(x)
